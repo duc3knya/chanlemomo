@@ -1,0 +1,150 @@
+
+
+.ss-countdown-container {
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	padding:0;
+    margin:0;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+    
+	overflow: hidden;
+	width:960px;
+	margin:0 auto;	
+}
+
+.ss-countdown-container *{
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+    padding:0;
+    margin:0;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+}
+
+.ss-countdown-container h1 {
+    color:#FFF;
+    text-transform: uppercase;
+    font-size:30px;
+    text-align: center;
+    margin-top:100px;
+    font-weight: normal;
+}
+.ss-countdown-container h4 {
+    color:#b6b6b6;
+    text-transform: uppercase;
+    font-size:18px;
+    text-align: center;
+    margin-top:30px;
+    font-weight: normal;
+}
+
+.ss-countdown-container .ss-clock-container {
+    overflow: hidden;
+    width: 100%;
+    margin:0 auto;
+    margin-top:50px;
+}
+
+.ss-countdown-container .ss-clock-days-container {
+    float:left;
+    margin-right:30px;
+}
+.ss-countdown-container .ss-clock-hours-container {
+    float:left;
+    margin-right:30px;
+}
+.ss-countdown-container .ss-clock-minutes-container {
+    float:left;
+    margin-right:30px;
+}
+.ss-countdown-container .ss-clock-seconds-container {
+    float:left;
+}
+
+
+
+.ss-countdown-container .ss-text { position:absolute; top:58px; left:55px; width:100px;  height:100px;}
+
+.ss-countdown-container .ss-value {
+    font-size:47px;
+    font-weight:bold;
+    color:#FFF;
+    text-align:center;
+    line-height:50px;
+    margin-top:15px;
+    width:100px;
+}
+
+.ss-countdown-container .ss-days-text,
+.ss-countdown-container .ss-hours-text,
+.ss-countdown-container .ss-minutes-text,
+.ss-countdown-container .ss-seconds-text{
+	width:100px;
+    text-align:center;
+    font-size:13px;
+    line-height:20px;
+    font-weight:bold;
+    text-transform:uppercase;
+}
+
+.ss-countdown-container .ss-days-text {color:#f9b401;}
+.ss-countdown-container .ss-hours-text {color:#23d0a2;}
+.ss-countdown-container .ss-minutes-text {color:#ff5153;}
+.ss-countdown-container .ss-seconds-text {color:#11c8ea;}
+
+.ss-countdown-container .ss-subscribe-container {
+	overflow: hidden;
+	width: 100%;	
+	margin-top:50px;
+	border-top: 1px solid #b6b6b6;
+}
+
+.ss-countdown-container .ss-subscribe-container p {	
+	font-size:14px; 
+	color:#b6b6b6; 
+	text-align:center;
+}
+
+.ss-countdown-container .ss-subscribe-container p.ss-title{
+	text-transform: uppercase;
+	line-height: 50px;
+}
+
+.ss-countdown-container .ss-subscribe-container input.ss-input {
+	display: inline-block;
+	padding: 5px 7px;
+	background-color: #dbd8d8;
+	color:#333;
+	text-decoration:none;
+	border: solid 1px #dbd8d8;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	margin: 0;
+	line-height: 18px;
+	width: 300px;
+}
+
+.ss-countdown-container .ss-subscribe-container a.ss-btn {
+	display: inline-block;
+	padding: 5px 7px;
+	background-color: #39F;
+	color:#FFF;
+	text-decoration:none;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	margin: 0;
+	line-height: 18px;
+}
+
+.ss-countdown-container .ss-subscribe-container a:hover.ss-btn {
+	color:#FFF;
+}
+
+.ss-countdown-container .ss-subscribe-container p.ss-error-container{
+	display: none;
+	color: #FF0000;
+	line-height: 40px;
+}
