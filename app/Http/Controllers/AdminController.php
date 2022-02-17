@@ -237,14 +237,14 @@ class AdminController extends Controller
 
         //Tổng năm
         $yeah              = now()->year;
-        $GetLichSuChoiMomo = $LichSuChoiMomo->where(
-            'status', '!=', 5
-        )->whereYear('created_at', '=', $yeah)->get();
-
-        foreach ($GetLichSuChoiMomo as $row) {
-            $TongDoanhThuGameNam = $TongDoanhThuGameNam + $row->tiencuoc;
-            $TongDoanhThuGameNam = $TongDoanhThuGameNam - $row->tiennhan;
-        }
+        //$GetLichSuChoiMomo = $LichSuChoiMomo->where(
+        //    'status', '!=', 5
+        //)->whereYear('created_at', '=', $yeah)->get();
+		$TongDoanhThuGameNam = 0;
+        //foreach ($GetLichSuChoiMomo as $row) {
+        //   $TongDoanhThuGameNam = $TongDoanhThuGameNam + $row->tiencuoc;
+        //   $TongDoanhThuGameNam = $TongDoanhThuGameNam - $row->tiennhan;
+        //}
 
         //Tính lượt chơi nổ hũ + doanh thu
         $GetLichSuChoiNoHu = $LichSuChoiNoHu->where(
