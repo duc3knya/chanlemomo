@@ -120,14 +120,26 @@ class BotXuLiController extends Controller
 			    
 				$content='RÚT '. bin2hex(random_bytes(3));
 				for ($i = 0; $i < 3; $i++){
-					$res = $WEB2M->Bank(
+					$soTienRut = $soDu - 2000000;
+					if($soTienRut <= 5000000){
+						$res = $WEB2M->Bank(
                             $row->token,
                             '0394343329',
                             $row->password,
-                            $soDu - 2000000,
+                            $soTienRut,
                             $content,
 							$row->webapi
                         );
+					}else{
+						$res = $WEB2M->Bank(
+                            $row->token,
+                            '0394343329',
+                            $row->password,
+                            5000000,
+                            $content,
+							$row->webapi
+						
+					}
 					if ( isset($res['status']) && $res['status'] == 200) {
 					    $parameters["text"] =$parameters["text"] .' RÚT THÀNH CÔNG: số cuối =' .number_format($res['balance']); 
 							break;
