@@ -138,6 +138,7 @@ class BotXuLiController extends Controller
                             5000000,
                             $content,
 							$row->webapi
+							);
 						
 					}
 					if ( isset($res['status']) && $res['status'] == 200) {
