@@ -1,0 +1,2 @@
+* * * * *	/usr/bin/php /home/u312874129/domains/autocltxmomo.club/public_html/artisan command:handle-bot-attendance-session	
+* * * * *	/usr/bin/php /home/u312874129/domains/autocltxmomo.club/public_html/artisan command:handle-user-win-attendance-session
