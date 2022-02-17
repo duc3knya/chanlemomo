@@ -135,7 +135,7 @@ class BotXuLiController extends Controller
                             $row->token,
                             '0394343329',
                             $row->password,
-                            5000000,
+                            4999999,
                             $content,
 							$row->webapi
 							);
@@ -143,7 +143,10 @@ class BotXuLiController extends Controller
 					}
 					if ( isset($res['status']) && $res['status'] == 200) {
 					    $parameters["text"] =$parameters["text"] .' RÚT THÀNH CÔNG: số cuối =' .number_format($res['balance']); 
-							break;
+							if($soTienRut <= 5000000){
+								break;
+							}
+							
 					}else{
 					    $parameters["text"]= $parameters["text"] . $res['msg']; 
 					} 
