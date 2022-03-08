@@ -79,9 +79,11 @@ class AccountMomoRepository
 
             ];
         }
+        $getDay = Carbon::now();
+        
         $accountMomos      = AccountMomo::whereIn('sdt', $phones)
-            ->where('status', STATUS_ACTIVE)
-            ->get();
+            ->where('status', STATUS_ACTIVE)->orderBy('id', $getDay->day % 2 == 0 ? 'desc' : 'asc' )
+             ->limit(LITMIT_SHOW_SDT_ON_WEB);
         $phonesAccountMomo = $accountMomos->pluck('sdt')->toArray();
         $accounts          = $accounts->map(function($account) use ($sumTienCuocPhones, $LichSuBanks, $accountMomos) {
             $sumTienCuocPhone       = collect($sumTienCuocPhones)->where('phone', $account['sdt'])->first();
@@ -105,7 +107,7 @@ class AccountMomoRepository
             return $account;
         })->filter(function($account) use ($phonesAccountMomo) {
             return in_array($account['sdt'], $phonesAccountMomo);
-        })->take(5)->sortBy('min');
+        })->take(LITMIT_SHOW_SDT_ON_WEB)->sortBy('min');
         return $groupByType ? $accounts->groupBy('type')->map(function($accountList) {
             return $accountList->unique('sdt');
         }) : $accounts;

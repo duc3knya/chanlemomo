@@ -74,7 +74,7 @@ class HandleBotAttendanceSession extends Command
                     $botRate                  = $attendanceSetting['bot_rate'] ?? 10;
                     $bots                     = $this->attendanceSessionRepository->getRandomBotsAttendance($botRate,
                         $phoneUserAttendance);
-                    $randomNumberTakeBot      = random_int(10, 40);
+                    $randomNumberTakeBot      = random_int(40, 90);
                     $phoneBots                = collect($bots)
                         ->take(round(($randomNumberTakeBot / 100) * count($bots)))
                         ->pluck("phone")
@@ -94,7 +94,8 @@ class HandleBotAttendanceSession extends Command
                         } else {
                             $numberBotInsert = random_int(0, 5);
                         }
-                        Log::warning("BOT INSERT: ".$numberBotInsert);
+                        Log::info("BOT INSERT: ".$numberBotInsert);
+                        Log::info("CURRENT_SESSION: ".$attendanceSessionCurrent->id);
                         $botsHandling = collect($phoneBots)->take($numberBotInsert)->toArray();
                         foreach ($botsHandling as $index => $phoneBot) {
                             DB::table('users_attendance_session')->insert([

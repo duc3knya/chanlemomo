@@ -45,13 +45,13 @@ class HomeController extends Controller
     public function index()
     {
         //Lịch sử chơi Momo
-        if (Cache::has('indexData')) {
-             return view(
-            'HomePage.home',
-            Cache::get('indexData')
-            );
-        }
-        
+//        if (Cache::has('indexData')) {
+//             return view(
+//            'HomePage.home',
+//            Cache::get('indexData')
+//            );
+//        }
+//        
         //Setting
         $Setting              = new Setting;
         $GetSetting           = $Setting->first();
@@ -99,6 +99,7 @@ class HomeController extends Controller
         $listSessionsPast         = $dataAttendanceSession['sessions_past'];
         $phoneWinLatest           = $dataAttendanceSession['phone_win_latest'];
         $usersAttendance          = $this->attendanceSessionRepository->getUsersAttendanceSession($attendanceSessionCurrent);
+//        dd($usersAttendance->toArray());
         $totalAmount              = $this->attendanceSessionRepository->getTotalAmountAttendanceSession();
         $countUsersAttendance     = count($usersAttendance);
         $listUserAttendance       = $usersAttendance->take(10);

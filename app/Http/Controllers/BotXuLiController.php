@@ -24,12 +24,21 @@ use App\Models\LimitCron;
 use App\Models\MaGiaoDich;
 use App\Models\TopTuan;
 use App\Models\AccountLevelMoney;
+use Illuminate\Support\Facades\Log;
+use App\Traits\PhoneNumber;
+use App\Models\DoanhThu;
+use App\Models\LichSuBank;
+
+
 
 
 
 class BotXuLiController extends Controller
 {
+    
+    
     public function __construct(){
+               
         if(!isset($_GET['cron'])) {
             exit('Exit!');
         }
@@ -78,24 +87,42 @@ class BotXuLiController extends Controller
 	}
 	//Xử lí lại status lỗi quá 3 phút chưa trả tiền
     public function getDoanhThuNgay(request $request){
+        
         $TongDoanhThuGameNgay = 0;
 		//Tổng ngày
 		$LichSuChoiMomo = new LichSuChoiMomo;
-        $GetLichSuChoiMomo = $LichSuChoiMomo->where(
-            'status', '!=', 5
-        )->whereDate('created_at', Carbon::today())->get();
-
+        $GetLichSuChoiMomo = $LichSuChoiMomo
+        ->whereDate('created_at', Carbon::today())->get();
+        $count = 0;
+        $nhan = 0;
+        $tra = 0;
         foreach ($GetLichSuChoiMomo as $row) {
+            // $nhan = $nhan + $row->tiencuoc;
+            // $tra =  $tra  - $row->tiennhan;
+            
             $TongDoanhThuGameNgay = $TongDoanhThuGameNgay + $row->tiencuoc;
             $TongDoanhThuGameNgay = $TongDoanhThuGameNgay - $row->tiennhan;
+            
+            
         }
+        //$TongDoanhThuGameNgay = $nhan - $tra;
+        //Tổng tháng
+         $TongDoanhThuGameThang = 0;
+          $month             = now()->month;
+         // $GetLichSuChoiMomo = $LichSuChoiMomo->whereMonth('created_at', '=', $month)->get();
+
+        //  foreach ($GetLichSuChoiMomo as $row) {
+        //      $TongDoanhThuGameThang = $TongDoanhThuGameThang + $row->tiencuoc;
+        //      $TongDoanhThuGameThang = $TongDoanhThuGameThang - $row->tiennhan;
+        //  }
+        
 		$parameters = array(
 	                                      "chat_id" => '1090916551',
                 	                        "text" => 'hello chao',
                 	                        "parse_mode" => 'Markdown'
                                     	);
                 	                    
-         $parameters["text"]='*AUTO CHẴN LẺ : Doanh thu ngày:* '. Carbon::now()  .' 🤡 :  '. number_format($TongDoanhThuGameNgay);
+         $parameters["text"]='*AUTO CHẴN LẺ : Doanh thu ngày:* '. Carbon::now()  .' 🤡 :  '. number_format($TongDoanhThuGameNgay) .' Tháng : '.number_format($TongDoanhThuGameThang);
          $this->sendSimMomo("sendMessage",$parameters);
         echo 'Update doanh thu ngày thành công';
     }
@@ -118,9 +145,9 @@ class BotXuLiController extends Controller
 			$parameters["text"] = '*AUTO CHẴN LẺ* : ' . $row->sdt . ' Số dư hiện tại =' . number_format($soDu)  ;
 			if($soDu > 2000000){
 			    
-				$content='RÚT '. bin2hex(random_bytes(3));
 				for ($i = 0; $i < 3; $i++){
-					$soTienRut = $soDu - 2000000;
+				    $content='RÚT '. bin2hex(random_bytes(3));
+				    $soTienRut = $soDu - 2000000;
 					if($soTienRut <= 5000000){
 						$res = $WEB2M->Bank(
                             $row->token,
@@ -144,9 +171,10 @@ class BotXuLiController extends Controller
 					if ( isset($res['status']) && $res['status'] == 200) {
 					    $parameters["text"] =$parameters["text"] .' RÚT THÀNH CÔNG: số cuối =' .number_format($res['balance']); 
 							if($soTienRut <= 5000000){
-								break;
+							   break;
 							}
 							
+						
 					}else{
 					    $parameters["text"]= $parameters["text"] . $res['msg']; 
 					} 
@@ -157,7 +185,10 @@ class BotXuLiController extends Controller
 			}
 			 $this->sendSimMomo("sendMessage",$parameters);
 			 $parameters["text"]='';
-		}        
+		} 
+		$parameters["text"]= 'HẾT';
+		$this->sendSimMomo("sendMessage",$parameters);
+			 
         echo 'rút tiền  thành công';
     }
 	
@@ -686,6 +717,7 @@ class BotXuLiController extends Controller
                                         }
                                     }
                                     echo'e';
+                                    $LichSuChoiMomo;
                                     if ($NameGame != '' && $row->status == 1) {
                                         //Kiểm tra số điện thoại tồn tại chưa tư dong hoàn tiền max 20k
 									//$LichSuChoiMomo1 = new LichSuChoiMomo;
@@ -736,8 +768,8 @@ class BotXuLiController extends Controller
                 	                        "text" => 'hello chao',
                 	                        "parse_mode" => 'Markdown'
                                     	);
-                	                    
-                        	             $parameters["text"]='*SDT* ' . $LichSuChoiMomo->sdt  .' Game '.  $LichSuChoiMomo->trochoi .'  Mã Giao Dịch : ' . $LichSuChoiMomo->magiaodich .' Nội dung: ' . $LichSuChoiMomo->noidung .' Cược: '. number_format($LichSuChoiMomo->tiencuoc)  .'  Tiền nhận ' . number_format($LichSuChoiMomo->tiennhan) . '  Kết Quả:  ' . $ketquagane;
+                	                    $sdtConvert = new PhoneNumber();
+                        	            $parameters["text"]='*SDT* ' . $LichSuChoiMomo->sdt . ' -> '. $sdtConvert->convert($LichSuChoiMomo->sdt) .' Game '.  $LichSuChoiMomo->trochoi .'  Mã Giao Dịch : ' . $LichSuChoiMomo->magiaodich .' Nội dung: ' . $LichSuChoiMomo->noidung .' Cược: '. number_format($LichSuChoiMomo->tiencuoc)  .'  Tiền nhận ' . number_format($LichSuChoiMomo->tiennhan) . '  Kết Quả:  ' . $ketquagane;
                         	             
                         	             $this->send("sendMessage",$parameters);
                         	            $parameters["chat_id"]='1970029182';
@@ -797,12 +829,27 @@ class BotXuLiController extends Controller
                 	                        "text" => 'hello chao',
                 	                        "parse_mode" => 'Markdown'
                                     	);
-                        	             $parameters["text"]='*SDT* ' . $LichSuChoiMomo->sdt  .' Game '.  $LichSuChoiMomo->trochoi .'  Mã Giao Dịch : ' . $LichSuChoiMomo->magiaodich .' Nội dung: ' . $LichSuChoiMomo->noidung .' Cược: '. number_format($LichSuChoiMomo->tiencuoc)  .'  Tiền nhận ' . number_format($LichSuChoiMomo->tiennhan) . '  Kết Quả:  ' . $ketquagane;
+                                    	$sdtConvert = new PhoneNumber();
+                        	            $parameters["text"]='*SDT* ' . $LichSuChoiMomo->sdt .' -> '. $sdtConvert->convert($LichSuChoiMomo->sdt) .' Game '.  $LichSuChoiMomo->trochoi .'  Mã Giao Dịch : ' . $LichSuChoiMomo->magiaodich .' Nội dung: ' . $LichSuChoiMomo->noidung .' Cược: '. number_format($LichSuChoiMomo->tiencuoc)  .'  Tiền nhận ' . number_format($LichSuChoiMomo->tiennhan) . '  Kết Quả:  ' . $ketquagane;
                         	            $this->send("sendMessage",$parameters);
                         	            $parameters["chat_id"]='1970029182';
                         	             $this->send("sendMessage",$parameters);
 									}
-                        
+									
+									// update doanh thu ngày 
+									$doanhThu = new DoanhThu;
+									$getDoanhThu = $doanhThu->whereDate('created_at', Carbon::today())->limit(1);
+									if ($getDoanhThu->count() > 0){
+                                         $GetLimitCron = $getDoanhThu->first();
+                                         $GetLimitCron->doanhthungay = $GetLimitCron->doanhthungay + $LichSuChoiMomo->tiencuoc - $LichSuChoiMomo->tiennhan ;
+                                         $GetLimitCron->save();
+                                        
+                                    }else{
+                                            $doanhThu= new DoanhThu;
+                                            $doanhThu->doanhthungay = $LichSuChoiMomo->tiencuoc - $LichSuChoiMomo->tiennhan;
+                                            $doanhThu->save();
+                                    }
+                                   
                                 }
                             }
                        
@@ -943,16 +990,32 @@ class BotXuLiController extends Controller
 
                 if ($Check->tiennhan > 0) {
                     // begin check cảnh báo sắp bảo trì
-					$LichSuChoiMomo = new LichSuChoiMomo;
-                    $GetLichSuChoiMomo = $LichSuChoiMomo->whereDate('created_at', Carbon::today())->where([
-                        'sdt_get' => $Check->sdt_get,'status' => 3,'ketqua' => 1,
-                    ])->get();
+				// 	$LichSuChoiMomo = new LichSuChoiMomo;
+    //                 $GetLichSuChoiMomo = $LichSuChoiMomo->whereDate('created_at', Carbon::today())->where([
+    //                     'sdt_get' => $Check->sdt_get,'status' => 3,'ketqua' => 1,
+    //                 ])->get();
 
-                    $listLimit = 0;
-					$countLimit = 0;
-                    foreach($GetLichSuChoiMomo as $crush){
-                        $listLimit = $listLimit + $crush->tiennhan;
-						$countLimit = $countLimit + 1;
+                    
+	//				$countLimit = 0;
+    //                 foreach($GetLichSuChoiMomo as $crush){
+    //                     $listLimit = $listLimit + $crush->tiennhan;
+	// 		               $countLimit = $countLimit + 1;
+    //                 }
+					//Lấy số lần bank
+                    $LichSuBank    = new LichSuBank;
+                    $countLimit     = 0;
+                    $listLimit      = 0;
+                    $getLichSuBank = $LichSuBank->whereDate('created_at', Carbon::today())->where([
+                        'sdtbank' => $Check->sdt_get,
+                    ])->get();
+        
+                    foreach ($getLichSuBank as $r) {
+                        $j = json_decode($r->response, true);
+        
+                        if (isset($j['status']) && $j['status'] == 200) {
+                            $countLimit++;
+                            $listLimit=$listLimit + $r->sotien;
+                        }
                     }
 					
 					if($countLimit >= 185 || $listLimit > 27000000){
@@ -1022,16 +1085,16 @@ class BotXuLiController extends Controller
                             if (str_contains($res['msg'], '5.000.000') || str_contains($res['msg'], '30.000.000') || str_contains($res['msg'], '100.000.000' )  || str_contains($res['msg'], 'giao') || str_contains($res['msg'], '150')) {
                                 
                                 if (str_contains($res['msg'], '5.000.000')){
-                                  $parameters["text"]= $Check->sdt_get . '    đạt max 5M/1 ngày '. ' AUTO CHẴN LẺ ';
+                                  $parameters["text"]= $Check->sdt_get . '    đạt max 5M/1 ngày '. ' AUTO CHẴN LẺ '  . $Check->magiaodich  . ' SDT : ' . $Check->sdt .' ';
                                 }
                                 if (str_contains($res['msg'], '30.000.000')){
-                                 $parameters["text"]= $Check->sdt_get . '     đạt max 30M/1 ngày'. ' AUTO CHẴN LẺ' ;
+                                 $parameters["text"]= $Check->sdt_get . '     đạt max 30M/1 ngày'. ' AUTO CHẴN LẺ' . $Check->magiaodich  . ' SDT : ' . $Check->sdt .' ';
                                 }
                                 if (str_contains($res['msg'], '100.000.000')){
-                                  $parameters["text"]= $Check->sdt_get . '    đạt max 100M/1 ngày'. ' AUTO CHẴN LẺ' ;
+                                  $parameters["text"]= $Check->sdt_get . '    đạt max 100M/1 ngày'. ' AUTO CHẴN LẺ' . $Check->magiaodich  . ' SDT : ' . $Check->sdt .' ';
                                 }
                                 if (str_contains($res['msg'], '150')){
-                                  $parameters["text"]= $Check->sdt_get . '    đạt max 150 giao dịch'. ' AUTO CHẴN LẺ' ;
+                                  $parameters["text"]= $Check->sdt_get . '    đạt max 150 giao dịch'. ' AUTO CHẴN LẺ' . $Check->magiaodich  . ' SDT : ' . $Check->sdt .' ';
                                 }
                         	      $this->sendSimMomo("sendMessage",$parameters);
 								  $ListAccountMomo = $AccountMomo->where([
@@ -1169,18 +1232,34 @@ class BotXuLiController extends Controller
 
                 if ($Check->tiennhan > 0) {
                         // begin check cảnh báo sắp bảo trì
-					$LichSuChoiMomo = new LichSuChoiMomo;
-                    $GetLichSuChoiMomo = $LichSuChoiMomo->whereDate('created_at', Carbon::today())->where([
-                        'sdt_get' => $Check->sdt_get,'status' => 3,'ketqua' => 1,
-                    ])->get();
+				// 	$LichSuChoiMomo = new LichSuChoiMomo;
+    //                 $GetLichSuChoiMomo = $LichSuChoiMomo->whereDate('created_at', Carbon::today())->where([
+    //                     'sdt_get' => $Check->sdt_get,'status' => 3,'ketqua' => 1,
+    //                 ])->get();
 
-                    $listLimit = 0;
-					$countLimit = 0;
-                    foreach($GetLichSuChoiMomo as $crush){
-                        $listLimit = $listLimit + $crush->tiennhan;
-						$countLimit = $countLimit + 1;
-                    }
+    //                 $listLimit = 0;
+				// 	$countLimit = 0;
+    //                 foreach($GetLichSuChoiMomo as $crush){
+    //                     $listLimit = $listLimit + $crush->tiennhan;
+				// 		$countLimit = $countLimit + 1;
+    //                 }
+						//Lấy số lần bank
 					
+                    $LichSuBank    = new LichSuBank;
+                    $countLimit     = 0;
+                    $listLimit      = 0;
+                    $getLichSuBank = $LichSuBank->whereDate('created_at', Carbon::today())->where([
+                        'sdtbank' => $Check->sdt_get,
+                    ])->get();
+        
+                    foreach ($getLichSuBank as $r) {
+                        $j = json_decode($r->response, true);
+        
+                        if (isset($j['status']) && $j['status'] == 200) {
+                            $countLimit++;
+                            $listLimit=$listLimit + $r->sotien;
+                        }
+                    }
 					if($countLimit >= 185 || $listLimit > 27000000){
 						//$GetMessageTraThuong->message ='CẢNH BÁO:SDT SẮP BẢO TRÌ HÃY LÊN WEB LẤY SỐ MỚI';
 						$GetMessageTraThuong->message ='cảnh báo:SDT ' . $Check->sdt_get .' sắp bảo trì vì đạt hạn mức!hãy lên WEB lấy số mới' ;
@@ -1223,7 +1302,23 @@ class BotXuLiController extends Controller
 					
 					}
                     // end
+                    // update code lỗi 51 bank tiên lỗi vẫn mất tiền
+                        $LichSuBankCode51    = new LichSuBank;	
+				    	$getLichSuBankCode51 = $LichSuBankCode51->whereDate('created_at', Carbon::today())->where([
+                        'noidung' => $GetMessageTraThuong->message.' '.$Check->magiaodich,
+                         ])->get();
+                         $coundCode51 = 0;
+                         foreach ($getLichSuBankCode51 as $r) {
+                         $j = json_decode($r->response, true);
 
+                         if (isset($j['status']) && $j['status'] == 51) {
+                            $coundCode51++;
+                         }
+                        }
+                        if($coundCode51 >= 2){
+                            continue;
+                        }
+                        // end update code lỗi 51 bank tiên lỗi vẫn mất tiền
                         $res = $WEB2M->Bank(
                             $Account->token,
                             $Check->sdt,
@@ -1232,9 +1327,10 @@ class BotXuLiController extends Controller
                             $GetMessageTraThuong->message.' '.$Check->magiaodich,
 							$Account->webapi
                         );
-    
                         
-                        if ( isset($res['status']) && $res['status'] == 200) {
+                        
+                        
+                        if ( isset($res['status']) && ($res['status'] == 200 || (($res['status'] == 51 && $Check->tiencuoc > 20000)  || ($res['status'] == 51 && $Check->tiencuoc == 0)) )) {
                              $Check->status = 3;
                              $Check->save();
                              $parameters = array(
@@ -1242,9 +1338,18 @@ class BotXuLiController extends Controller
                 	            "text" => 'hello chao',
                 	            "parse_mode" => 'Markdown'
                             	);
+                            	$sdtConvert = new PhoneNumber();
                             	//*Trả Thưởng SDT*
                             	//$parameters["text"]='*Xử lý giao dịch lỗi*: SDT ' . $Check->sdt .' Game '. $Check->trochoi .' Mã giao dịch: ' .$Check->magiaodich  . ' Nội dung: ' . $Check->noidung  .' Cược: '. number_format($Check->tiencuoc)  .' Tiền nhận ' . number_format($Check->tiennhan) .'  *SĐT=>* '. $Check->sdt_get;
-                	            $parameters["text"]='*Trả Thưởng SDT*: SDT ' . $Check->sdt .' Game '. $Check->trochoi .' Mã giao dịch: ' .$Check->magiaodich  . ' Nội dung: ' . $Check->noidung  .' Cược: '. number_format($Check->tiencuoc)  .' Tiền nhận ' . number_format($Check->tiennhan) .'  *SĐT=>* '. $Check->sdt_get;
+                	            $parameters["text"]='*Trả Thưởng SDT*: SDT ' . $Check->sdt .' -> '.$sdtConvert->convert($Check->sdt) .' Game '. $Check->trochoi .' Mã giao dịch: ' .$Check->magiaodich  . ' Nội dung: ' . $Check->noidung  .' Cược: '. number_format($Check->tiencuoc)  .' Tiền nhận ' . number_format($Check->tiennhan) .'  *SĐT=>* '. $Check->sdt_get;
+                	            if($res['status'] == 51){
+                	                $Check->status = 99;
+                	                $Check->save();
+                	                $parameters["text"] = $parameters["text"] . ' CHÚ  Ý mã 51 . Cần check';
+                	                $this->sendSimMomo("sendMessage",$parameters);
+							        $this->sendHetTien("sendMessage",$parameters);
+                	            }
+                	            
                 	            $this->send("sendMessage",$parameters);
                 	            $parameters["chat_id"]='1970029182';
                         	   $this->send("sendMessage",$parameters);
@@ -1266,27 +1371,36 @@ class BotXuLiController extends Controller
                                             	);
                                 if (str_contains($res['msg'], '5') || str_contains($res['msg'], '30') || str_contains($res['msg'], '100' )  || str_contains($res['msg'], '5') || str_contains($res['msg'], '150') ) {
                                         if (str_contains($res['msg'], 'mới')){
-                                          $parameters["text"]= $Check->sdt_get . '    đạt max 5M/1 ngày AUTO CHẴN LẺ'  ;
+                                          $parameters["text"]= $Check->sdt_get . '    đạt max 5M/1 ngày AUTO CHẴN LẺ' . $Check->magiaodich  . ' SDT : ' . $Check->sdt .' ' ;
                                         }
                                         if (str_contains($res['msg'], '30')){
-                                         $parameters["text"]= $Check->sdt_get . '     đạt max 30M/1 ngày AUTO CHẴN LẺ ' ;
+                                         $parameters["text"]= $Check->sdt_get . '     đạt max 30M/1 ngày AUTO CHẴN LẺ '. $Check->magiaodich  . ' SDT : ' . $Check->sdt .' ' ;
                                         }
                                         if (str_contains($res['msg'], '100')){
-                                          $parameters["text"]= $Check->sdt_get . '    đạt max 100M/1 ngày AUTO CHẴN LẺ ' ;
+                                          $parameters["text"]= $Check->sdt_get . '    đạt max 100M/1 ngày AUTO CHẴN LẺ ' . $Check->magiaodich  . ' SDT : ' . $Check->sdt .' ';
                                         }
                                         if (str_contains($res['msg'], '150')){ 
-                                          $parameters["text"]= $Check->sdt_get . '    đạt max 150 giao dịch AUTO CHẴN LẺ ' ;
+                                          $parameters["text"]= $Check->sdt_get . '    đạt max 150 giao dịch AUTO CHẴN LẺ '. $Check->magiaodich  . ' SDT : ' . $Check->sdt .' ' ;
                                         }
-                                        
+                                        if (str_contains($res['msg'], '150')){ 
+                                          $parameters["text"]= $Check->sdt_get . '    đạt max 150 giao dịch AUTO CHẴN LẺ '. $Check->magiaodich  . ' SDT : ' . $Check->sdt .' ' ;
+                                        }
                                         $parameters["text"] = $parameters["text" ] .  $res['msg'];
                                 	      $this->sendSimMomo("sendMessage",$parameters);
         								  $ListAccountMomo = $AccountMomo->where([
         									'status' => 1,
         									])->first();
-        									$Check->sdt_get = $ListAccountMomo->sdt;	
+        								  if (!is_null($ListAccountMomo)){
+        									$Check->sdt_get = $ListAccountMomo->sdt;
+                                          }
         									$Account->status = 2;
         									$Account->save();
         						  }
+        					if (str_contains($res['msg'], 'Nội dung này đã được chuyển tiền rồi')){ 
+                                         $Check->status = 3;
+                                         $Check->save();
+                                         continue;
+        					}	  
 							if(str_contains($res['msg'], 'đủ tiền')){
 							    $parameters["text"]='AUTO CHẴN LẺ :'. $Check->sdt_get . '   *không đủ tiền!* Mã : ' . $Check->magiaodich  . ' SDT : ' . $Check->sdt . ' Nội dung: ' . $Check->noidung . ' Cược: '. number_format($Check->tiencuoc)  .' Tiền nhận ' . number_format($Check->tiennhan) . $res['msg'];;
 							    $this->sendSimMomo("sendMessage",$parameters);
@@ -1303,9 +1417,23 @@ class BotXuLiController extends Controller
                            
                         }
                         
+                        if($res['status'] == 51){
+                             $parameters = array(
+	                            "chat_id" => '1090916551',
+                	            "text" => 'hello chao',
+                	            "parse_mode" => 'Markdown'
+                            	);
+                            	$parameters["text"]='*CHECK Trả Thưởng SDT*: SDT ' . $Check->sdt .' Game '. $Check->trochoi .' Mã giao dịch: ' .$Check->magiaodich  . ' Nội dung: ' . $Check->noidung  .' Cược: '. number_format($Check->tiencuoc)  .' Tiền nhận ' . number_format($Check->tiennhan) .'  *SĐT=>* '. $Check->sdt_get;
+                	            if($res['status'] == 51){
+                	                $parameters["text"] = $parameters["text"] . ' CHÚ  Ý mã 51 . Cần check';
+                	                $this->sendSimMomo("sendMessage",$parameters);
+							        $this->sendHetTien("sendMessage",$parameters);
+                	            }
+                        }
+                        
                         var_dump($res);
                         
-                        sleep(3);
+                        sleep(1);
                     
                     
                 } else {

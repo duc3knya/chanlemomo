@@ -53,7 +53,7 @@
                     <label>Web API</label>
                     <select class="form-control" name="webapi">
                         <option value="1" selected>Web 2B</option>
-                        <option value="2">Thuê API</option>
+                        <option value="2">apiv3.web2m.com</option>
                     </select>
                 </div>
                 <div class="col-12 col-md-12"><br /></div>

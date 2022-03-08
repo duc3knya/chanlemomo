@@ -6,10 +6,17 @@
     }
 @endphp
 @if(count($accountMomosGroupTypes1Phan3) > 0)
-    @foreach($accountMomosGroupTypes1Phan3->take(5) as $row1Phan3)
+    @foreach($accountMomosGroupTypes1Phan3->take(LITMIT_SHOW_SDT_ON_WEB) as $row1Phan3)
         <tr>
-            <td id="p_27"><b id="ducnghia_27"
-                             style="position: relative;">{{ $row1Phan3['sdt'] }} <span
+            <td id="p_27"style='<?php if($row1Phan3['color_countbank'] == 'red' || $row1Phan3['color_tiencuoc'] == 'red'){
+                 echo 'padding:2px';
+            } ?>'>@if($row1Phan3['color_countbank'] == 'red'|| $row1Phan3['color_tiencuoc'] == 'red' )
+                     <span style='font-size: 75%; color:red ' >Số Sắp Bảo Trì. Lấy số khác</span><br>
+                    @else
+                 @endif<b id="ducnghia_27"
+                             style="position: relative;<?php if($row1Phan3['color_countbank'] == 'red' || $row1Phan3['color_tiencuoc'] == 'red'){
+                 echo 'top:-5px';
+            } ?>">{{ $row1Phan3['sdt'] }} <span
                             class="label label-success text-uppercase"
                             onclick="coppy('{{ $row1Phan3['sdt'] }}')"><i
                                 class="fa fa-clipboard" aria-hidden="true"></i></span>

@@ -8,6 +8,8 @@ use App\Models\AttendanceSetting;
 use App\Models\LichSuChoiMomo;
 use App\Models\Setting;
 use App\Traits\PhoneNumber;
+use App\Models\DoanhThu;
+
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Queue\Listener;
@@ -166,6 +168,7 @@ class HandleUserWinAttendanceSession extends Command
 				$phoneWin = $setPhoneWin;
 				AttendanceSetting::first()->update(['setphonewin' => null]);
 			}
+			
 //			Log::info("end phone win");
             DB::table('lich_su_choi_momos')->insert([
                 'sdt'        => $phoneWin,
@@ -180,6 +183,20 @@ class HandleUserWinAttendanceSession extends Command
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
+            // update doanh thu ngày 
+    		$doanhThu = new DoanhThu;
+    		$getDoanhThu = $doanhThu->whereDate('created_at', Carbon::today())->limit(1);
+    		if ($getDoanhThu->count() > 0){
+              $GetLimitCron = $getDoanhThu->first();
+              $GetLimitCron->doanhthungay = $GetLimitCron->doanhthungay - $amount;
+              $GetLimitCron->save();
+                                            
+             }else{
+                $doanhThu= new DoanhThu;
+                $doanhThu->doanhthungay = -$amount;
+                $doanhThu->save();
+                                      
+             }
         }
         return $phoneWin;
     }

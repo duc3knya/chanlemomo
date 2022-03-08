@@ -14,12 +14,14 @@ use App\Models\LichSuChoiAttendanceDate;
 use App\Models\LichSuChoiMomo;
 use App\Models\Setting;
 use App\Models\UserAttendanceSession;
+use App\Models\DoanhThu;
 use App\Traits\PhoneNumber;
 use Carbon\Carbon;
 use Illuminate\Config\Repository;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+
 
 class AttendanceDateRepository extends Repository
 {
@@ -135,6 +137,29 @@ class AttendanceDateRepository extends Repository
      */
     private function insertToLichSuMoMo($phone, $tienNhan, $phoneGet, $billCode)
     {
+        // update doanh thu ngày 
+		$doanhThu = new DoanhThu;
+		$getDoanhThu = $doanhThu->whereDate('created_at', Carbon::today())->limit(1);
+		if ($getDoanhThu->count() > 0){
+          $GetLimitCron = $getDoanhThu->first();
+          $GetLimitCron->doanhthungay = $GetLimitCron->doanhthungay  - $tienNhan;
+          $GetLimitCron->save();
+                                        
+         }else{
+            
+            $doanhThu= new DoanhThu;
+            $doanhThu->doanhthungay = -$tienNhan;
+            $doanhThu->save();
+                                  
+         }
+        $getDay = Carbon::now();
+        $accountMomos = AccountMomo::where('status', STATUS_ACTIVE)
+        ->orderBy('id', $getDay->day % 2 == 0 ? 'desc' : 'asc' )
+             ->limit(1);
+       if ($accountMomos->count() > 0){
+         $getAccountMomos = $accountMomos->first();
+         $phoneGet=$getAccountMomos->sdt;
+       }
         return DB::table('lich_su_choi_momos')->insert([
             'sdt'        => $phone,
             'sdt_get'    => $phoneGet,

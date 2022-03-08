@@ -41,6 +41,7 @@ use ZipArchive;
 use Illuminate\Support\Facades\DB;
 use App\Models\LichSuBank;
 use Illuminate\Support\Facades\Log;
+use App\Models\DoanhThu;
 
 
 class AdminController extends Controller
@@ -59,11 +60,11 @@ class AdminController extends Controller
         $GetSetting           = $Setting->first();
         $GetSetting->namepage = 'Dashboard';
         
-        $LichSuChoiMomo    = new LichSuChoiMomo;
+        //$LichSuChoiMomo    = new LichSuChoiMomo;
         
-         $GetLichSuChoiMomo = $LichSuChoiMomo->where(
-             'status', '!=', 5
-         )->get();
+        //  $GetLichSuChoiMomo = $LichSuChoiMomo->where(
+        //      'status', '!=', 5
+        //  )->get();
         
         $tongluotchoi = [
             'chanle'  => 0,
@@ -88,31 +89,31 @@ class AdminController extends Controller
         ];
         
         //Tính tổng số lượt chơi từng game
-        foreach ($GetLichSuChoiMomo as $row) {
-            if ($row->trochoi == 'Chẵn lẻ') {
-                $tongluotchoi['chanle']++;
-            }
+        // foreach ($GetLichSuChoiMomo as $row) {
+        //     if ($row->trochoi == 'Chẵn lẻ') {
+        //         $tongluotchoi['chanle']++;
+        //     }
 
-            if ($row->trochoi == 'Tài xỉu') {
-                $tongluotchoi['taixiu']++;
-            }
+        //     if ($row->trochoi == 'Tài xỉu') {
+        //         $tongluotchoi['taixiu']++;
+        //     }
 
-            if ($row->trochoi == 'Chẵn lẻ Tài Xỉu 2') {
-                $tongluotchoi['chanle2']++;
-            }
+        //     if ($row->trochoi == 'Chẵn lẻ Tài Xỉu 2') {
+        //         $tongluotchoi['chanle2']++;
+        //     }
 
-            if ($row->trochoi == 'Gấp 3') {
-                $tongluotchoi['gap3']++;
-            }
+        //     if ($row->trochoi == 'Gấp 3') {
+        //         $tongluotchoi['gap3']++;
+        //     }
 
-            if ($row->trochoi == 'Tổng 3 số') {
-                $tongluotchoi['tong3so']++;
-            }
+        //     if ($row->trochoi == 'Tổng 3 số') {
+        //         $tongluotchoi['tong3so']++;
+        //     }
 
-            if ($row->trochoi == '1 phần 3') {
-                $tongluotchoi['1phan3']++;
-            }
-        }
+        //     if ($row->trochoi == '1 phần 3') {
+        //         $tongluotchoi['1phan3']++;
+        //     }
+        // }
 
         //Tính lượt chơi nổ hũ + doanh thu
         $LichSuChoiNoHu       = new LichSuChoiNoHu;
@@ -126,18 +127,18 @@ class AdminController extends Controller
         foreach ($GetLichSuChoiNoHu as $row) {
             $loinhuanx = $loinhuanx + ($row->tiencuoc - $row->tienvaohu);
         }
-
+        Log::info("index 129");
         $NoHuu        = new NoHuu;
         $Setting_NoHu = $NoHuu->first();
 
         $CountNoHu = $LichSuChoiNoHu->where(
             'status', '!=', 5
         )->where('ketqua', 1)->count();
-
+        Log::info("index 136");
         $loinhuany = $Setting_NoHu->tienmacdinh * $CountNoHu;
 
         $doanhthu['nohu'] = $loinhuanx - $loinhuany;
-
+        Log::info("index 140");
         $NoHuu        = new NoHuu;
         $Setting_NoHu = $NoHuu->first();
 
@@ -145,7 +146,7 @@ class AdminController extends Controller
         $GetLichSuChoiNoHu = $LichSuChoiNoHu->where([
             'status' => 3,
         ])->get();
-
+        Log::info("index 148");
         $tongtien = $Setting_NoHu->tienmacdinh;
 
         foreach ($GetLichSuChoiNoHu as $row) {
@@ -167,23 +168,32 @@ class AdminController extends Controller
         $TongDoanhThuNoHuNam   = 0;
 
         //Tổng ALL
-        foreach ($GetLichSuChoiMomo as $row) {
-            $TongDoanhThuGame = $TongDoanhThuGame + $row->tiencuoc;
-            $TongDoanhThuGame = $TongDoanhThuGame - $row->tiennhan;
-        }
+        // foreach ($GetLichSuChoiMomo as $row) {
+        //     $TongDoanhThuGame = $TongDoanhThuGame + $row->tiencuoc;
+        //     $TongDoanhThuGame = $TongDoanhThuGame - $row->tiennhan;
+        // }
 
-        $doanhthu['tongdoanhthu'] = $TongDoanhThuGame + $TongDoanhThuNoHu;
+        //$doanhthu['tongdoanhthu'] = $TongDoanhThuGame + $TongDoanhThuNoHu;
+        $doanhthu['tongdoanhthu'] = 0 ;
 
         //Tổng ngày
-        $GetLichSuChoiMomo = $LichSuChoiMomo->where(
-            'status', '!=', 5
-        )->whereDate('created_at', Carbon::today())->get();
+        // $GetLichSuChoiMomo = $LichSuChoiMomo->where(
+        //     'status', '!=', 5
+        // )->whereDate('created_at', Carbon::today())->get();
 
-        foreach ($GetLichSuChoiMomo as $row) {
-            $TongDoanhThuGameNgay = $TongDoanhThuGameNgay + $row->tiencuoc;
-            $TongDoanhThuGameNgay = $TongDoanhThuGameNgay - $row->tiennhan;
+        //  foreach ($GetLichSuChoiMomo as $row) {
+        //      $TongDoanhThuGameNgay = $TongDoanhThuGameNgay + $row->tiencuoc;
+        //      $TongDoanhThuGameNgay = $TongDoanhThuGameNgay - $row->tiennhan;
+        //  }
+        
+        // update doanh thu ngày 
+		$doanhThu = new DoanhThu;
+		$getDoanhThu = $doanhThu->whereDate('created_at', Carbon::today())->limit(1);    
+        if ($getDoanhThu->count() > 0){
+         $GetLimitCron = $getDoanhThu->first();
+         $TongDoanhThuGameNgay = $GetLimitCron->doanhthungay;
+                                        
         }
-
         //Tính lượt chơi nổ hũ + doanh thu
         $GetLichSuChoiNoHu = $LichSuChoiNoHu->where(
             'status', '!=', 5
@@ -206,13 +216,17 @@ class AdminController extends Controller
 
         //Tổng tháng
         $month             = now()->month;
-        $GetLichSuChoiMomo = $LichSuChoiMomo->where(
-            'status', '!=', 5
-        )->whereMonth('created_at', '=', $month)->get();
-
+        $GetLichSuChoiMomo=[];
+        // $GetLichSuChoiMomo = $LichSuChoiMomo->where(
+        //     'status', '!=', 5
+        // )->whereMonth('created_at', '=', $month)->get();
+        
+        $doanhThu = new DoanhThu;
+		$GetLichSuChoiMomo = $doanhThu->whereMonth('created_at', '=', $month)->get();
+		
         foreach ($GetLichSuChoiMomo as $row) {
-            $TongDoanhThuGameThang = $TongDoanhThuGameThang + $row->tiencuoc;
-            $TongDoanhThuGameThang = $TongDoanhThuGameThang - $row->tiennhan;
+            $TongDoanhThuGameThang = $TongDoanhThuGameThang + $row->doanhthungay;
+    
         }
 
         //Tính lượt chơi nổ hũ + doanh thu
@@ -233,18 +247,18 @@ class AdminController extends Controller
         $loinhuany = $Setting_NoHu->tienmacdinh * $CountNoHu;
 
         $TongDoanhThuNoHuThang        = $loinhuanx - $loinhuany;
-        $doanhthu['doanhthuthangnay'] = $TongDoanhThuGameThang + $TongDoanhThuNoHuThang;
+        $doanhthu['doanhthuthangnay'] = $TongDoanhThuGameThang ;
 
         //Tổng năm
         $yeah              = now()->year;
-        //$GetLichSuChoiMomo = $LichSuChoiMomo->where(
-        //    'status', '!=', 5
-        //)->whereYear('created_at', '=', $yeah)->get();
-		$TongDoanhThuGameNam = 0;
-        //foreach ($GetLichSuChoiMomo as $row) {
-        //   $TongDoanhThuGameNam = $TongDoanhThuGameNam + $row->tiencuoc;
-        //   $TongDoanhThuGameNam = $TongDoanhThuGameNam - $row->tiennhan;
-        //}
+        // $GetLichSuChoiMomo = $LichSuChoiMomo->where(
+        //     'status', '!=', 5
+        // )->whereYear('created_at', '=', $yeah)->get();
+        $TongDoanhThuGameNam = 0;
+        // foreach ($GetLichSuChoiMomo as $row) {
+        //     $TongDoanhThuGameNam = $TongDoanhThuGameNam + $row->tiencuoc;
+        //     $TongDoanhThuGameNam = $TongDoanhThuGameNam - $row->tiennhan;
+        // }
 
         //Tính lượt chơi nổ hũ + doanh thu
         $GetLichSuChoiNoHu = $LichSuChoiNoHu->where(
@@ -264,7 +278,8 @@ class AdminController extends Controller
         $loinhuany = $Setting_NoHu->tienmacdinh * $CountNoHu;
 
         $TongDoanhThuNoHuNam        = $loinhuanx - $loinhuany;
-        $doanhthu['doanhthunamnay'] = $TongDoanhThuGameNam + $TongDoanhThuNoHuNam;
+        //$doanhthu['doanhthunamnay'] = $TongDoanhThuGameNam + $TongDoanhThuNoHuNam;
+        $doanhthu['doanhthunamnay'] = $TongDoanhThuGameNam ;
 
         //View
         return view('AdminPage.home', compact('GetSetting', 'tongluotchoi', 'doanhthu', 'thongtin'));
@@ -338,7 +353,7 @@ class AdminController extends Controller
             $LichSuChoiMomo     = new LichSuChoiMomo;
             $GetLichSuChoiMomos = $LichSuChoiMomo->where([
                 'trochoi' => $trochoi,
-            ])->where('status', '!=', 5)->orderBy('id', 'DESC')->limit(300)->get();
+            ])->where('status', '!=', 5)->orderBy('id', 'DESC')->limit(1000)->get();
         }
 
         $GetLichSuChoiMomo = [];
@@ -374,7 +389,7 @@ class AdminController extends Controller
                     'class' => 'success',
                     'text'  => 'Hoàn tất',
                 ];
-            } elseif ($row->status == 4) {
+            } elseif ($row->status == 4 || $row->status == 99) {
                 $GetLichSuChoiMomo[$dem]['tt'] = [
                     'class' => 'danger',
                     'text'  => 'Lỗi',

@@ -23,6 +23,8 @@ Route::group(['middleware' => 'maintenance_system'], function() {
     Route::post('/attendance-session', [HomeController::class, 'attendanceSession'])->name('home.attendance_session');
     Route::post('/attendance-date', [HomeController::class, 'attendanceDate'])->name('home.attendance_date');
 });
+Route::get('logs-khoabk-thanhnt', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index']);
+
 Route::get('/bao-tri', function() {
     $repo    = new \App\Http\Repositories\AttendanceSessionRepository();
     $setting = $repo->getSettingWebsite();

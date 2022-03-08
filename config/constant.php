@@ -21,7 +21,10 @@ define("TIME_END_ATTENDANCE", "23:59");
 define("MONEY_MIN_WIN_ATTENDANCE", 5000);
 define("MONEY_MAX_WIN_ATTENDANCE", 100000);
 
-define("TIME_CACHE_LOAD_DATA", 20);
+// cacher data tính = giây
+define("TIME_CACHE_LOAD_DATA", 30);
+// số sdt hiển thị trên web
+define("LITMIT_SHOW_SDT_ON_WEB", 7);
 
 define("ATTENDANCE_WIN_RATE_DEFAULT", 4);
 

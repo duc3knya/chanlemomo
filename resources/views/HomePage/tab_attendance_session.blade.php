@@ -56,7 +56,7 @@
                 ?>
                 <div class="occho" id="muc_huongdan">
                     - Mỗi phiên quà các bạn có {{ $time >= 86400 ? $time/86400 : ($time >= 3600 ? $time/3600 : $time/60) }}  {{ $time >=86400 ? "ngày":($time >= 3600 ? "tiếng" : "phút") }} để điểm danh. <br>
-                    - Số điện thoại điểm danh phải chơi {{ env('APP_NAME') }} ít nhất 1 lần trong ngày. Không giới hạn số
+                    - Số điện thoại điểm danh phải chơi AUTOCLTXMOMO.CLUB ít nhất 1 lần trong ngày. Không giới hạn số
                     lần điểm danh trong ngày. <br>
                     - Khi hết thời gian, người may mắn sẽ nhận được số tiền của phiên đó. <br>
                     - Game chỉ hoạt động từ <b>{{ \Carbon\Carbon::parse($startTime)->format('H:i') }} sáng</b> đến {{ \Carbon\Carbon::parse($endTime)->format('H:i') }} tối

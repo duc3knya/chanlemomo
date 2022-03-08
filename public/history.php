@@ -3,7 +3,7 @@ error_reporting(0);
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 $host = "localhost";
 $username = "u312874129_automomo";
-$password = 'z2g4IM@Z';
+$password = 'D7Qp[?xd!0g';
 $dbname = "u312874129_automomo";
 $conn = mysqli_connect($host,$username,$password,$dbname);
 if(!$conn){
@@ -107,7 +107,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <p>Loại trò chơi: <b style="color: #ff0066;"><?=$trochoi_mem;?></b></p>
         <p>Kết quả:  <b style="color: #00cc66;"><?php if($ketqua_mem=="1"){echo "Thắng 😍";}else{echo "Thua 😥";}?></b></p
         ><p>Tiền nhận: <b style="color: #ff0066;"><?= number_format($tiennhan_mem) ?>VNĐ</b></p>
-        <p>Trạng thái: <b style="color: #0000ff"><?php if($status_mem=="3"){echo "Đã Thanh Toán";}else{echo "Tài Khoản không đủ tiền! Đợi admin nạp tiền. ĐỚP ÍT THÔI! đừng lo Tiền sẽ về . Yêu Bạn!";}?></b></p>
+        <p>Trạng thái: <b style="color: #0000ff"><?php if($status_mem=="3"){echo "Đã Thanh Toán";}else if($status_mem=="99"){echo "Do momo Bị lag.Nên mã giao dịch này cần nhắn cho ad để kiểm tra và đối soát.Yêu bạn!";} else {echo "Tài Khoản không đủ tiền! Đợi admin nạp tiền. ĐỚP ÍT THÔI! đừng lo Tiền sẽ về . Yêu Bạn!";}?></b></p>
         <p>Thời gian nhận: <?= $created_at_mem ?></p>
         <p>Đã xử lý lúc: <?= $updated_at_mem ?></p>
         <br/><hr/>
@@ -138,5 +138,7 @@ mysql_close($conn);
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 </body>
-mysql_close($conn);
-<?php }?>
+
+<?php 
+ mysql_close($conn);}
+?>

@@ -6,10 +6,17 @@
     }
 @endphp
 @if(count($accountMomosGroupTypesGap3) > 0)
-    @foreach($accountMomosGroupTypesGap3->take(5) as $rowGap3)
+    @foreach($accountMomosGroupTypesGap3->take(LITMIT_SHOW_SDT_ON_WEB) as $rowGap3)
         <tr>
-            <td id="p_27"><b id="ducnghia_27"
-                             style="position: relative;">{{ $rowGap3['sdt'] }} <span
+            <td id="p_27"style='<?php if($rowGap3['color_countbank'] == 'red' || $rowGap3['color_tiencuoc'] == 'red'){
+                 echo 'padding:2px';
+            } ?>'>@if($rowGap3['color_countbank'] == 'red'|| $rowGap3['color_tiencuoc'] == 'red' )
+                     <span style='font-size: 75%; color:red ' >Số Sắp Bảo Trì. Lấy số khác</span><br>
+                    @else
+                 @endif<b id="ducnghia_27"
+                             style="position: relative;<?php if($rowGap3['color_countbank'] == 'red' || $rowGap3['color_tiencuoc'] == 'red'){
+                 echo 'top:-5px';
+            } ?>">{{ $rowGap3['sdt'] }} <span
                             class="label label-success text-uppercase"
                             onclick="coppy('{{ $rowGap3['sdt'] }}')"><i
                                 class="fa fa-clipboard" aria-hidden="true"></i></span>
